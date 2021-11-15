@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Document</title>
+    <style>
+        #edit{
+            display: none;
+            
+
+            
+        }
+       
+        .bg-gray{
+            background-color: gray ;
+        }
+        .bg-yellow{
+            background-color: yellow ;
+        }
+        .bg-green{
+            background-color: green   ;
+        }
+        body {
+            background-image: url("https://png.pngtree.com/background/20210711/original/pngtree-pink-flat-wind-creative-banner-background-picture-image_1065730.jpg ");
+            background-size:1300px 650px;
+           
+            
+        } 
+    </style>
+</head>
+<body>
+    <script>     
+        
+        class Task{
+            constructor(id, title, desc, timeBegin, timeEnd, status){                
+                this.__id = Number(id);
+                this.__title = title;
+                this.__desc = desc;
+                this.__timeBegin = timeBegin;
+                this.__timeEnd = timeEnd;
+                this.__status = status;
+            }
+
+            set id(value)  { this.__id = value; }
+            get id() { return this.__id; }
+
+            set title(value)  { this.__title = value; }
+            get title() { return this.__title; }
+
+            set desc(value)  { this.__desc = value; }
+            get desc() { return this.__desc; }
+
+            set timeBegin(value)  { this.__timeBegin = value; }
+            get timeBegin() { return this.__timeBegin; }
+
+            set timeEnd(value)  { this.__timeEnd = value; }
+            get timeEnd() { return this.__timeEnd; }
+
+            set status(value)  { this.__status = value; }
+            get status() { return this.__status; }
+        }  
+
+        
+       
+        taskList = Array();
+        
+        function create(){
+            btn = document.getElementById('btnAdd');
+            btn.addEventListener('click', addTask);
+
+            rootDom = document.getElementById('root');
+            titleDom = document.getElementById('title');
+            descDom = document.getElementById('desc');
+            timeBeginDom = document.getElementById('timeBegin');
+            timeEndDom = document.getElementById('timeEnd');
+            statusDom = document.getElementById('status');
+
+            editDom = document.getElementById('edit');
+            editTitleDom = document.getElementById('edit_title');
+            editDescDom = document.getElementById('edit_desc');
+            editTimeBeginDom = document.getElementById('edit_timeBegin');
+            editTimeEndDom = document.getElementById('edit_timeEnd');
+            editStatusDom = document.getElementById('edit_status');
+        }
+
+        function render(){
+            rootDom.innerHTML = '';
+            taskList.forEach(task => {
+                rootDom.appendChild(createNodeTask(task));
+            });
+        }
+
+        function createNodeTask(task){
+            nodeRow = document.createElement('div');
+            nodeRow.setAttribute('class', 'row');
+
+            nodeId = document.createElement('div');
+            nodeId.setAttribute('class', 'col-md-1');
+            nodeId.innerHTML = task.id;
+            nodeRow.appendChild(nodeId);
+
+            nodeTitle = document.createElement('div');
+            nodeTitle.setAttribute('class', 'col-md-2');
+            nodeTitle.innerHTML = task.title;
+            nodeRow.appendChild(nodeTitle);
+
+            nodeDesc = document.createElement('div');
+            nodeDesc.setAttribute('class', 'col-md-2');
+            nodeDesc.innerHTML = task.desc;
+            nodeRow.appendChild(nodeDesc);
+
+            nodeTimeBegin = document.createElement('div');
+            nodeTimeBegin.setAttribute('class', 'col-md-2');
+            nodeTimeBegin.innerHTML = task.timeBegin;
+            nodeRow.appendChild(nodeTimeBegin);
+
+            nodeTimeEnd = document.createElement('div');
+            nodeTimeEnd.setAttribute('class', 'col-md-2');
+            nodeTimeEnd.innerHTML = task.timeEnd;
+            nodeRow.appendChild(nodeTimeEnd);
+
+            nodeStatus = document.createElement('div');
+            nodeStatus.setAttribute('class', 'col-md-1');
+            nodeStatus.innerHTML = task.status;
+            nodeRow.appendChild(nodeStatus);
+           
+            var bgColor = ' bg-gray'; 
+            if (task.status == "Doing") {
+                bgColor = ' bg-yellow';
+            }else if (task.status == "Completed") {
+                bgColor = ' bg-green';
+            }
+            
+            nodeRow.className = nodeRow.className + bgColor;
+
+            
+            nodeBtnEditWrap = document.createElement('div');
+            nodeBtnEditWrap.setAttribute('class', 'col-md-1');
+            nodeRow.appendChild(nodeBtnEditWrap);
+
+            nodeButtonEdit = document.createElement('button');
+            nodeButtonEdit.innerHTML = 'Edit';
+            nodeButtonEdit.addEventListener('click', function(){
+                editTask(task.id);
+            });
+            nodeBtnEditWrap.appendChild(nodeButtonEdit);
+
+            //Create button Edit
+            nodeBtnDeleteWrap = document.createElement('div');
+            nodeBtnDeleteWrap.setAttribute('class', 'col-md-1');
+            nodeRow.appendChild(nodeBtnDeleteWrap);
+
+            nodeBtnDelete = document.createElement('button');
+            nodeBtnDelete.innerHTML = 'Delete';
+            nodeBtnDelete.addEventListener('click', function(){
+                deleteTask(task.id);
+            });
+            nodeBtnDeleteWrap.appendChild(nodeBtnDelete);
+
+            return nodeRow;
+        }
+
+        //create task
+        let id = 0;
+        function addTask(){ 
+            id++;
+            task = new Task(
+                id,
+                titleDom.value,
+                descDom.value,
+                timeBeginDom.value,
+                timeEndDom.value,
+                statusDom.value
+            )
+            taskList.push(task);
+            render();
+        }
+
+        function deleteTask(id){
+            i = 0;
+            for(;i < taskList.length; i++){
+                if(taskList[i].id == id) break;
+            }
+            taskList.splice(i, 1);
+            render();
+        }
+        let index;
+        function editTask(id){
+            taskList.forEach(task => {
+                if(task.id == id){
+                    editTitleDom.value = task.title;
+                    editDescDom.value = task.desc;
+                    editTimeBeginDom.value = task.timeBegin;
+                    editTimeEndDom.value = task.timeEnd;
+                    editStatusDom.value = task.status;
+                    editDom.style.display = 'block';
+                    index = id;
+                }
+            });
+        }
+        
+
+        function updateTask(){
+            id = index;
+            taskList.forEach(task => {
+                if(task.id == id){
+                    task.title = editTitleDom.value;
+                    task.desc = editDescDom.value;
+                    task.timeBegin = editTimeBeginDom.value;
+                    task.timeEnd = editTimeEndDom.value;
+                    task.status = editStatusDom.value;
+                    editDom.style.display = 'none';
+                }
+            });
+            render();
+        }
+        window.onload = function(e) {
+            create();
+            // render();
+        }
+        
+    </script>
+    <div class="container">
+        <h1 style= "text-align:center; color:rgb(78, 3, 148) ;font-family:Comic Sans MS;text-shadow: 2px 2px 5px rgb(8, 5, 207)">Todo List</h1>
+        <div id="create">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="" style="color:rgb(78, 3, 148) ;text-shadow: 2px 2px 5px rgb(8, 5, 207)">Title:</label>
+                    <input type="text" name="" id="title"  style="color:rgb(78, 3, 148)">
+                </div>
+                <div class="col-md-6">
+                    <label for="" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">Description:</label>
+                    <input type="text" name="" id="desc" style="color:rgb(78, 3, 148)">
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">Time Begin:</label>
+                    <input type="datetime-local" name="" id="timeBegin" style="color:rgb(78, 3, 148)">
+                </div>
+                <div class="col-md-4">
+                    <label for="" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">Time End:</label>
+                    <input type="datetime-local" name="" id="timeEnd" style="color:rgb(78, 3, 148)">
+                </div>
+                <div class="col-md-4">
+                    <label for="" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">Status</label>
+                    <select name="" id="status" style="color:rgb(78, 3, 148)">
+                        <option value="Not Start" style="color:rgb(78, 3, 148)">Not Start</option>
+                        <option value="Doing" style="color:rgb(78, 3, 148)">Doing</option>
+                        <option value="Completed" style="color:rgb(78, 3, 148)">Completed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button id="btnAdd"  style="color:black;background-color:rgb(216, 8, 147)">Add Task</button>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div id="edit" >
+            <div class="row" >
+                <div class="col-md-6">
+                    <label for="" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">Title:</label>
+                    <input type="text" name="" id="edit_title" style="color:rgb(78, 3, 148)">
+                </div>
+                <div class="col-md-6">
+                    <label for="" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">Description:</label>
+                    <input type="text" name="" id="edit_desc" style="color:rgb(78, 3, 148)">
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">Time Begin:</label>
+                    <input type="datetime-local" name="" id="edit_timeBegin" style="color:rgb(78, 3, 148)">
+                </div>
+                <div class="col-md-4">
+                    <label for="" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">Time End:</label>
+                    <input type="datetime-local" name="" id="edit_timeEnd" style="color:rgb(78, 3, 148)">
+                </div>
+                <div class="col-md-4">
+                    <label for="" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">Status</label>
+                    <select name="" id="edit_status" style="color:rgb(78, 3, 148)">
+                        <option value="Not Start" style="color:rgb(78, 3, 148)">Not Start</option>
+                        <option value="Doing" style="color:rgb(78, 3, 148)">Doing</option>
+                        <option value="Completed" style="color:rgb(78, 3, 148)">Completed</option>
+                    </select>
+                </div>
+            </div>   
+            <div class="row">
+                <div class="col-md-4" >
+                    <button id="btnUpdate" class="btn btn-info" style="color:black;background-color:rgb(216, 8, 147)"onclick="updateTask()">Update Task</button>
+                </div>
+            </div>
+        </div>      
+    </div>
+    <div id="root" class="container">
+        <div class="row">
+            <div class="col-md-2" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">id</div>
+            <div class="col-md-2" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">title</div>
+            <div class="col-md-2" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">desc</div>
+            <div class="col-md-2" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">timeEnd</div>            
+            <div class="col-md-2" style="color:rgb(78, 3, 148);text-shadow: 2px 2px 5px rgb(8, 5, 207)">timeBegin</div>
+           
+        </div>
+    </div>
+</body>
+</html>
